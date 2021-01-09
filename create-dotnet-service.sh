@@ -14,7 +14,7 @@ _SLN_ABSOLUTE_DIR="${_BASEDIR}/${SOLUTION_NAME}";
 C_INFO="\033[0;32m"
 C_WARNING="\033[0;31m"
 C_TEXT="\033[0m"
-C_SEPARATOR="################################################################################"
+C_SEPARATOR="########################################################################################################################"
 
 echo -e ""
 echo -e $C_SEPARATOR
@@ -43,9 +43,9 @@ then
     echo -e "${C_WARNING}Solution directory exists! If you proceed, it will be wiped first.${C_TEXT}"
 fi
 
-echo ""
+echo -e ""
 echo $C_SEPARATOR
-echo ""
+echo -e ""
 
 while true; do
 
@@ -54,17 +54,17 @@ while true; do
     case $B_CONTINUE in
         [Yy]* ) break;;
         [Nn]* ) exit;;
-        *) echo "Type Y or N";;
+        *) echo -e "Type Y or N";;
     esac
 done
 
 
 rm -rf $_SLN_ABSOLUTE_DIR
 
-echo "Creating solution dir"
+echo -e "Creating solution dir"
 mkdir $_SLN_ABSOLUTE_DIR
 
-echo "Creating empty solution"
+echo -e "Creating empty solution"
 dotnet new sln -n $SOLUTION_NAME -o $_SLN_ABSOLUTE_DIR
 
 function create_project {
@@ -73,13 +73,13 @@ function create_project {
     TESTS_PROJECT_NAME="${PROJECT_NAME}.Tests"
     TESTS_PROJECT_TYPE="nunit"
         
-    echo $C_SEPARATOR
-    echo "Creating project $PROJECT_NAME of type $PROJECT_TYPE"
+    echo -e ""
+    echo -e "Creating project ${C_INFO}$PROJECT_NAME${C_TEXT} of type ${C_INFO}$PROJECT_TYPE${C_TEXT}"
     dotnet new $PROJECT_TYPE -n $PROJECT_NAME -o "${_SLN_ABSOLUTE_DIR}/${PROJECT_NAME}"
     add_project_to_solution $PROJECT_NAME
 
-    echo $C_SEPARATOR
-    echo "Creating test project $TESTS_PROJECT_NAME of type $TESTS_PROJECT_TYPE"
+    echo -e ""
+    echo -e "Creating test project ${C_INFO}$TESTS_PROJECT_NAME${C_TEXT} of type ${C_INFO}$TESTS_PROJECT_TYPE${C_TEXT}"
     dotnet new nunit -n $TESTS_PROJECT_NAME -o "${_SLN_ABSOLUTE_DIR}/${TESTS_PROJECT_NAME}"
     add_project_to_solution $TESTS_PROJECT_NAME
 
@@ -87,15 +87,15 @@ function create_project {
 }
 
 function add_reference {
-    TARGET_PROJECT=$1
-    REFERENCE_PROJECT=$2
-    echo "Adding reference "
+    echo ""
+    echo -e "Adding reference ${C_INFO}${1}${C_TEXT} -> ${C_INFO}${2}${C_TEXT}"
     dotnet add "${_SLN_ABSOLUTE_DIR}/${1}" reference "${_SLN_ABSOLUTE_DIR}/${2}"
 }
 
 function add_project_to_solution {
     PROJECT_TO_ADD=$1
-    echo "Adding ${PROJECT_TO_ADD} to sln"
+    echo ""
+    echo -e "Adding ${C_INFO}${PROJECT_TO_ADD}${C_TEXT} to solution"
     dotnet sln "${_SLN_ABSOLUTE_DIR}/${SOLUTION_NAME}.sln" add "${_SLN_ABSOLUTE_DIR}/${PROJECT_TO_ADD}"
 }
 
@@ -105,10 +105,12 @@ create_project classlib $PROJECT_DATA_ACCESS &
 create_project classlib $PROJECT_DOMAIN &
 create_project console $PROJECT_SERVICE
 
+echo -e ""
 echo -e $C_SEPARATOR
 echo -e ""
 echo -e "${C_INFO}Creating references between projects${C_TEXT}"
 echo -e ""
+
 add_reference $PROJECT_API $PROJECT_BUSINESS_LOGIC
 add_reference $PROJECT_API $PROJECT_DOMAIN
 
@@ -117,3 +119,27 @@ add_reference $PROJECT_SERVICE $PROJECT_DOMAIN
 
 add_reference $PROJECT_BUSINESS_LOGIC $PROJECT_DATA_ACCESS
 add_reference $PROJECT_DATA_ACCESS $PROJECT_DOMAIN
+
+echo -e ""
+echo -e $C_SEPARATOR
+echo -e ""
+echo -e "${C_INFO}Make sure solution builds${C_TEXT}"
+
+PWD=pwd
+cd ${_SLN_ABSOLUTE_DIR}
+
+dotnet restore
+dotnet build
+dotnet test
+
+cd $PWD
+
+echo -e "${C_INFO}"
+echo $C_SEPARATOR
+echo -e ""
+
+echo -e "All done. 🎉"
+
+echo -e ""
+echo $C_SEPARATOR
+echo -e "${C_TEXT}"
