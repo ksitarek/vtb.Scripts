@@ -75,12 +75,12 @@ function create_project {
         
     echo $C_SEPARATOR
     echo "Creating project $PROJECT_NAME of type $PROJECT_TYPE"
-    dotnet new web -n $PROJECT_NAME -o "${_SLN_ABSOLUTE_DIR}/${PROJECT_NAME}"
+    dotnet new $PROJECT_TYPE -n $PROJECT_NAME -o "${_SLN_ABSOLUTE_DIR}/${PROJECT_NAME}"
     add_project_to_solution $PROJECT_NAME
 
     echo $C_SEPARATOR
     echo "Creating test project $TESTS_PROJECT_NAME of type $TESTS_PROJECT_TYPE"
-    dotnet new web -n $TESTS_PROJECT_NAME -o "${_SLN_ABSOLUTE_DIR}/${TESTS_PROJECT_NAME}"
+    dotnet new nunit -n $TESTS_PROJECT_NAME -o "${_SLN_ABSOLUTE_DIR}/${TESTS_PROJECT_NAME}"
     add_project_to_solution $TESTS_PROJECT_NAME
 
     add_reference $PROJECT_NAME $TESTS_PROJECT_NAME
