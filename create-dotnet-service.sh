@@ -81,7 +81,7 @@ function create_project {
     echo -e ""
     echo -e "Creating test project ${C_INFO}$TESTS_PROJECT_NAME${C_TEXT} of type ${C_INFO}$TESTS_PROJECT_TYPE${C_TEXT}"
     dotnet new nunit -n $TESTS_PROJECT_NAME -o "${_SLN_ABSOLUTE_DIR}/${TESTS_PROJECT_NAME}"
-    add_project_to_solution $TESTS_PROJECT_NAME
+    add_project_to_solution $TESTS_PROJECT_NAME "Tests"
 
     add_reference $PROJECT_NAME $TESTS_PROJECT_NAME
 }
@@ -96,7 +96,13 @@ function add_project_to_solution {
     PROJECT_TO_ADD=$1
     echo ""
     echo -e "Adding ${C_INFO}${PROJECT_TO_ADD}${C_TEXT} to solution"
-    dotnet sln "${_SLN_ABSOLUTE_DIR}/${SOLUTION_NAME}.sln" add "${_SLN_ABSOLUTE_DIR}/${PROJECT_TO_ADD}"
+
+    if [[ $# -eq 1 ]]
+    then
+        dotnet sln "${_SLN_ABSOLUTE_DIR}/${SOLUTION_NAME}.sln" add "${_SLN_ABSOLUTE_DIR}/${PROJECT_TO_ADD}"
+    else 
+        dotnet sln "${_SLN_ABSOLUTE_DIR}/${SOLUTION_NAME}.sln" add "${_SLN_ABSOLUTE_DIR}/${PROJECT_TO_ADD}" -s "$2"
+    fi
 }
 
 create_project web $PROJECT_API &
