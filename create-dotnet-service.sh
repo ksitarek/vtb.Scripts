@@ -89,7 +89,7 @@ function create_project {
 function add_reference {
     echo ""
     echo -e "Adding reference ${C_INFO}${1}${C_TEXT} -> ${C_INFO}${2}${C_TEXT}"
-    dotnet add "${_SLN_ABSOLUTE_DIR}/${1}" reference "${_SLN_ABSOLUTE_DIR}/${2}"
+    dotnet add "${_SLN_ABSOLUTE_DIR}/${2}" reference "${_SLN_ABSOLUTE_DIR}/${1}"
 }
 
 function add_project_to_solution {
@@ -137,6 +137,18 @@ cd ${_SLN_ABSOLUTE_DIR}
 dotnet restore
 dotnet build
 dotnet test
+
+echo -e ""
+echo -e $C_SEPARATOR
+echo -e ""
+echo -e "${C_INFO}Create GIT repository${C_TEXT}"
+
+echo -e "Retrieve .gitignore file"
+wget -O .gitignore https://raw.githubusercontent.com/github/gitignore/master/VisualStudio.gitignore
+
+git init
+git add .
+git commit -m "Hello, World"
 
 cd $PWD
 
