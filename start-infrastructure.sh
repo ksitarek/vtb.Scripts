@@ -13,4 +13,30 @@ echo_info "Attempt to start infrastructure"
 echo_separator
 echo_emptyline
 
-docker-compose -f $COMPOSE_FILE_PATH up -d
+echo_info "Clear previous infrastructure containers and network"
+docker stop vtb_infra_mongo vtb_infra_rabbit
+docker rm vtb_infra_mongo vtb_infra_rabbit
+docker network rm vtb_network
+
+echo_info "Create network"
+docker network create --driver bridge vtb_network
+
+echo_info "Run infrastructure containers"
+docker run \
+    -h "vtb_infra_rabbit" \
+    --name "vtb_infra_rabbit" \
+    --network "vtb_network" \
+    -p "15672:15672" \
+    -p "5672:5672" \
+    -d \
+    "rabbitmq:3-management" &
+
+docker run \
+    -h "vtb_infra_mongo" \
+    --name "vtb_infra_mongo" \
+    --network "vtb_network" \
+    -p "27017:27017" \
+    -d \
+    "mongo:4.4" 
+
+wait
