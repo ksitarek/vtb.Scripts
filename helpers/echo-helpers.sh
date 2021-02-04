@@ -24,3 +24,11 @@ function echo_info {
 function echo_warning { 
     echo -e "${C_WARNING}${1}${C_TEXT}" 
 }
+
+function echo_bool {
+    if "$1"; then
+        echo_info "✅ $2"
+    else
+        echo_info "❌ $2"
+    fi
+}

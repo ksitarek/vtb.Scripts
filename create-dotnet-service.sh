@@ -6,6 +6,7 @@ PROJECT_API="${SOLUTION_NAME}.Api"
 PROJECT_BUSINESS_LOGIC="${SOLUTION_NAME}.BusinessLogic"
 PROJECT_DATA_ACCESS="${SOLUTION_NAME}.DataAccess"
 PROJECT_DOMAIN="${SOLUTION_NAME}.Domain"
+PROJECT_CONTRACTS="${SOLUTION_NAME}.Contracts"
 PROJECT_SERVICE="${SOLUTION_NAME}.Service"
 _DIRNAME="`dirname \"$0\"`"
 _BASEDIR="`(cd \"${_DIRNAME}/..\" && pwd)`"
@@ -33,6 +34,7 @@ echo -e "\t- ${C_INFO}${PROJECT_API}${C_TEXT}"
 echo -e "\t- ${C_INFO}${PROJECT_BUSINESS_LOGIC}${C_TEXT}"
 echo -e "\t- ${C_INFO}${PROJECT_DATA_ACCESS}${C_TEXT}"
 echo -e "\t- ${C_INFO}${PROJECT_DOMAIN}${C_TEXT}"
+echo -e "\t- ${C_INFO}${PROJECT_CONTRACTS}${C_TEXT}"
 echo -e "\t- ${C_INFO}${PROJECT_SERVICE}${C_TEXT}"
 
 echo -e ""
@@ -83,13 +85,13 @@ function create_project {
     dotnet new nunit -n $TESTS_PROJECT_NAME -o "${_SLN_ABSOLUTE_DIR}/${TESTS_PROJECT_NAME}"
     add_project_to_solution $TESTS_PROJECT_NAME "Tests"
 
-    add_reference $PROJECT_NAME $TESTS_PROJECT_NAME
+    add_reference $TESTS_PROJECT_NAME $PROJECT_NAME
 }
 
 function add_reference {
     echo ""
-    echo -e "Adding reference ${C_INFO}${1}${C_TEXT} -> ${C_INFO}${2}${C_TEXT}"
-    dotnet add "${_SLN_ABSOLUTE_DIR}/${2}" reference "${_SLN_ABSOLUTE_DIR}/${1}"
+    echo -e "Adding reference ${C_INFO}${2}${C_TEXT} -> ${C_INFO}${1}${C_TEXT}"
+    dotnet add "${_SLN_ABSOLUTE_DIR}/${1}" reference "${_SLN_ABSOLUTE_DIR}/${2}"
 }
 
 function add_project_to_solution {
@@ -109,7 +111,10 @@ create_project web $PROJECT_API &
 create_project classlib $PROJECT_BUSINESS_LOGIC &
 create_project classlib $PROJECT_DATA_ACCESS &
 create_project classlib $PROJECT_DOMAIN &
+create_project classlib $PROJECT_CONTRACTS &
 create_project console $PROJECT_SERVICE
+
+wait
 
 echo -e ""
 echo -e $C_SEPARATOR
@@ -122,8 +127,11 @@ add_reference $PROJECT_API $PROJECT_DOMAIN
 
 add_reference $PROJECT_SERVICE $PROJECT_BUSINESS_LOGIC
 add_reference $PROJECT_SERVICE $PROJECT_DOMAIN
+add_reference $PROJECT_SERVICE $PROJECT_CONTRACTS
 
 add_reference $PROJECT_BUSINESS_LOGIC $PROJECT_DATA_ACCESS
+add_reference $PROJECT_BUSINESS_LOGIC $PROJECT_CONTRACTS
+
 add_reference $PROJECT_DATA_ACCESS $PROJECT_DOMAIN
 
 echo -e ""
